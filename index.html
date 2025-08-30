@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>The Impossible CSS Computer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#041b0e;
+    --panel:#081f12;
+    --grid:#0a3b1f;
+    --neon:#27ff61;
+    --neon-dim:#11cc45;
+    --text:#9dfbb8;
+    --shadow: 0 0 .5rem var(--neon), 0 0 1.2rem rgba(39,255,97,.45);
+    --shadow-strong: 0 0 .7rem var(--neon), 0 0 1.6rem rgba(39,255,97,.6), inset 0 0 .6rem rgba(39,255,97,.25);
+    --radius:14px;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    background:
+      radial-gradient(1200px 500px at 50% 10%, rgba(0,255,90,.05), transparent 60%) ,
+      repeating-linear-gradient(180deg, rgba(0,255,90,.03) 0 1px, transparent 1px 3px),
+      var(--bg);
+    color:var(--text);
+    font-family:'Share Tech Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, "Courier New", monospace;
+    letter-spacing:.02em;
+  }
+
+  .computer{
+    max-width:1200px;
+    margin:22px auto 60px;
+    padding:14px;
+    border:2px solid var(--neon);
+    border-radius:var(--radius);
+    background:linear-gradient(180deg, rgba(39,255,97,.05), rgba(39,255,97,.02));
+    box-shadow: 0 0 0.6rem rgba(39,255,97,.35), inset 0 0 .7rem rgba(39,255,97,.12);
+  }
+
+  header{
+    text-align:center;
+    padding:8px 10px 18px;
+    border-bottom:2px solid var(--neon);
+    margin-bottom:18px;
+  }
+  .logo-dot{
+    display:inline-block; width:18px; height:18px; margin:0 10px;
+    background:radial-gradient(circle at 40% 40%, var(--neon) 0 40%, transparent 41% 100%);
+    box-shadow:var(--shadow);
+    border-radius:4px;
+    vertical-align:middle;
+  }
+  h1{
+    margin:0;
+    font-family:'VT323','Share Tech Mono',monospace;
+    font-size: clamp(28px, 3.1vw, 44px);
+    color:var(--neon);
+    text-shadow: var(--shadow);
+    letter-spacing:.06em;
+  }
+  .subtitle{
+    margin-top:6px;
+    color:#77f59a;
+    opacity:.9;
+    font-size: clamp(13px, 1.6vw, 18px);
+  }
+
+  /* two top panels */
+  .top{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:16px;
+  }
+  .panel{
+    border:2px solid var(--neon);
+    border-radius:var(--radius);
+    background:
+      linear-gradient(180deg, rgba(39,255,97,.06), rgba(39,255,97,.02)),
+      radial-gradient(900px 200px at 50% 0%, rgba(39,255,97,.06), transparent 60%),
+      var(--panel);
+    box-shadow: inset 0 0 1rem rgba(39,255,97,.15);
+    padding:16px 18px 18px;
+    position:relative;
+  }
+  .panel h2{
+    margin:0 0 14px;
+    font-size: 20px;
+    color:var(--neon);
+    text-shadow: var(--shadow);
+    letter-spacing:.12em;
+    text-align:center;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  /* inputs */
+  .row{
+    display:grid;
+    grid-template-columns: 140px 1fr;
+    align-items:center;
+    margin:10px 0 18px;
+    gap:12px;
+  }
+  .row .label{
+    justify-self:end;
+    font-weight:600;
+    letter-spacing:.12em;
+  }
+  .bits{
+    display:flex; gap:10px;
+    flex-wrap:wrap;
+  }
+
+  /* checkboxes styled as neon bit cells */
+  .bit-input{ display:none }
+  .bit{
+    --on: 0;
+    width:48px; height:48px;
+    border-radius:12px;
+    border:2px solid var(--neon);
+    display:grid; place-items:center;
+    font-size:22px; font-weight:700;
+    color:#002b12;
+    background:
+      radial-gradient(100% 100% at 50% 30%, rgba(39,255,97,.25), rgba(39,255,97,.08) 60%, rgba(39,255,97,.05) 70%, rgba(39,255,97,.03) 100%),
+      rgba(39,255,97,.12);
+    box-shadow: inset 0 0 .7rem rgba(39,255,97,.2);
+    cursor:pointer;
+    transition: transform .07s ease, box-shadow .15s ease, background .15s ease;
+    position:relative;
+    user-select:none;
+  }
+  .bit::after{
+    content:"0";
+    color:var(--neon);
+    text-shadow: var(--shadow);
+  }
+  .bit-input:checked + .bit{
+    background:
+      radial-gradient(100% 100% at 50% 30%, rgba(39,255,97,.6), rgba(39,255,97,.18) 65%, rgba(39,255,97,.08) 80%, rgba(39,255,97,.06) 100%),
+      rgba(39,255,97,.18);
+    box-shadow: var(--shadow-strong);
+    transform: translateY(-1px);
+  }
+  .bit-input:checked + .bit::after{ content:"1" }
+
+  /* gate buttons (radio) */
+  .gates{
+    display:flex; justify-content:center; gap:14px; flex-wrap:wrap;
+  }
+  .gate-radio{ display:none }
+  .gate{
+    min-width:90px;
+    padding:12px 18px;
+    border:2px solid var(--neon);
+    border-radius:12px;
+    text-align:center;
+    cursor:pointer;
+    color:var(--neon);
+    text-shadow: var(--shadow);
+    letter-spacing:.12em;
+    background:
+      radial-gradient(120% 120% at 50% 20%, rgba(39,255,97,.12), rgba(39,255,97,.05) 60%, rgba(39,255,97,.03) 100%),
+      rgba(39,255,97,.07);
+    box-shadow: inset 0 0 .6rem rgba(39,255,97,.18);
+    transition: box-shadow .15s ease, transform .08s ease, background .15s ease;
+  }
+  .gate-radio:checked + .gate{
+    background:
+      radial-gradient(120% 120% at 50% 10%, rgba(39,255,97,.35), rgba(39,255,97,.08) 70%),
+      rgba(39,255,97,.16);
+    box-shadow: var(--shadow-strong);
+    transform: translateY(-1px);
+  }
+
+  /* results panel */
+  .results{
+    margin-top:18px;
+    border:2px solid var(--neon);
+    border-radius:var(--radius);
+    background:
+      linear-gradient(180deg, rgba(39,255,97,.04), rgba(39,255,97,.02)),
+      var(--panel);
+    box-shadow: inset 0 0 1rem rgba(39,255,97,.12);
+    padding:14px 16px 16px;
+  }
+  .results h3{
+    margin:0 0 10px;
+    text-align:center;
+    color:var(--neon);
+    text-shadow: var(--shadow);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    letter-spacing:.12em;
+    font-size:20px;
+  }
+
+  .result-grid{
+    border:1px solid var(--neon-dim);
+    border-radius:12px;
+    padding:10px;
+    display:grid;
+    grid-template-columns: 1fr auto 1fr auto 1fr;
+    align-items:center;
+    gap:12px;
+    background:
+      linear-gradient(180deg, rgba(39,255,97,.04), rgba(39,255,97,.02)),
+      repeating-linear-gradient(90deg, rgba(39,255,97,.05) 0 1px, transparent 1px 10px);
+  }
+  .col{
+    display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+  }
+  .tiny-label{
+    font-weight:700; letter-spacing:.1em; color:#79f59b;
+    margin-right:6px;
+  }
+  .arrow{
+    font-size:22px; color:var(--neon); text-shadow: var(--shadow);
+  }
+
+  /* read-only mirrors for outputs */
+  .rbit{
+    width:48px; height:48px; border-radius:12px;
+    border:2px solid var(--neon);
+    display:grid; place-items:center;
+    background:
+      radial-gradient(115% 115% at 50% 20%, rgba(39,255,97,.12), rgba(39,255,97,.05) 70%, rgba(39,255,97,.03) 100%),
+      rgba(39,255,97,.06);
+    box-shadow: inset 0 0 .6rem rgba(39,255,97,.15);
+    position:relative;
+  }
+  .rbit::after{
+    content:"0";
+    font-weight:700; font-size:22px; color:var(--neon); text-shadow:var(--shadow);
+  }
+
+  /* ----------- PURE CSS LOGIC using :has() ----------- */
+  /* AND => bit is 1 iff Ai and Bi are checked */
+  .computer:has(#op-and:checked):has(#a3:checked):has(#b3:checked) .r3::after { content:"1" }
+  .computer:has(#op-and:checked):has(#a2:checked):has(#b2:checked) .r2::after { content:"1" }
+  .computer:has(#op-and:checked):has(#a1:checked):has(#b1:checked) .r1::after { content:"1" }
+  .computer:has(#op-and:checked):has(#a0:checked):has(#b0:checked) .r0::after { content:"1" }
+
+  /* OR => bit is 1 if Ai or Bi is checked */
+  .computer:has(#op-or:checked):has(#a3:checked) .r3::after { content:"1" }
+  .computer:has(#op-or:checked):has(#b3:checked) .r3::after { content:"1" }
+  .computer:has(#op-or:checked):has(#a2:checked) .r2::after { content:"1" }
+  .computer:has(#op-or:checked):has(#b2:checked) .r2::after { content:"1" }
+  .computer:has(#op-or:checked):has(#a1:checked) .r1::after { content:"1" }
+  .computer:has(#op-or:checked):has(#b1:checked) .r1::after { content:"1" }
+  .computer:has(#op-or:checked):has(#a0:checked) .r0::after { content:"1" }
+  .computer:has(#op-or:checked):has(#b0:checked) .r0::after { content:"1" }
+
+  /* XOR => bit is 1 if Ai != Bi */
+  .computer:has(#op-xor:checked):has(#a3:checked):not(:has(#b3:checked)) .r3::after { content:"1" }
+  .computer:has(#op-xor:checked):has(#b3:checked):not(:has(#a3:checked)) .r3::after { content:"1" }
+  .computer:has(#op-xor:checked):has(#a2:checked):not(:has(#b2:checked)) .r2::after { content:"1" }
+  .computer:has(#op-xor:checked):has(#b2:checked):not(:has(#a2:checked)) .r2::after { content:"1" }
+  .computer:has(#op-xor:checked):has(#a1:checked):not(:has(#b1:checked)) .r1::after { content:"1" }
+  .computer:has(#op-xor:checked):has(#b1:checked):not(:has(#a1:checked)) .r1::after { content:"1" }
+  .computer:has(#op-xor:checked):has(#a0:checked):not(:has(#b0:checked)) .r0::after { content:"1" }
+  .computer:has(#op-xor:checked):has(#b0:checked):not(:has(#a0:checked)) .r0::after { content:"1" }
+
+  /* pretty wires */
+  .wire{
+    height:2px; background:linear-gradient(90deg, transparent, var(--neon), transparent);
+    filter: drop-shadow(0 0 6px var(--neon));
+    opacity:.7;
+  }
+
+  .decimals{
+    display:flex; justify-content:center; gap:24px; margin-top:12px; flex-wrap:wrap;
+    font-weight:700;
+  }
+  .badge{
+    padding:6px 10px; border:2px solid var(--neon); border-radius:999px; color:var(--neon);
+    text-shadow:var(--shadow);
+    background: rgba(39,255,97,.06);
+    box-shadow: inset 0 0 .5rem rgba(39,255,97,.15);
+    min-width:140px; text-align:center;
+  }
+
+  .steps{
+    margin-top:14px;
+    border-top:1px dashed var(--neon-dim);
+    padding-top:12px;
+    font-size:15px;
+    color:#86f7a7;
+  }
+  .steps code{
+    color:var(--neon);
+    text-shadow:var(--shadow);
+  }
+
+  footer{
+    margin-top:16px;
+    text-align:center;
+    font-size:14px;
+    opacity:.9;
+  }
+  .zap{color:var(--neon); text-shadow:var(--shadow)}
+  a, a:visited{ color:var(--neon); }
+
+  /* small screens */
+  @media (max-width:880px){
+    .top{ grid-template-columns: 1fr }
+    .row{ grid-template-columns: 110px 1fr }
+    .bit, .rbit{ width:44px; height:44px; font-size:20px }
+  }
+</style>
+</head>
+<body>
+  <div class="computer" id="computer">
+    <header>
+      <h1>THE IMPOSSIBLE CSS COMPUTER</h1>
+      <div class="subtitle">Binary Logic Gates</div>
+    </header>
+
+    <div class="top">
+      <!-- Left: Binary inputs -->
+      <section class="panel">
+        <h2>BINARY INPUTS</h2>
+
+        <div class="row">
+          <div class="label">INPUT A:</div>
+          <div class="bits" aria-label="Input A, 4-bit">
+            <input id="a3" class="bit-input" type="checkbox" />
+            <label class="bit" for="a3" title="A3 (MSB)"></label>
+
+            <input id="a2" class="bit-input" type="checkbox" />
+            <label class="bit" for="a2" title="A2"></label>
+
+            <input id="a1" class="bit-input" type="checkbox" />
+            <label class="bit" for="a1" title="A1"></label>
+
+            <input id="a0" class="bit-input" type="checkbox" />
+            <label class="bit" for="a0" title="A0 (LSB)"></label>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="label">INPUT B:</div>
+          <div class="bits" aria-label="Input B, 4-bit">
+            <input id="b3" class="bit-input" type="checkbox" />
+            <label class="bit" for="b3" title="B3 (MSB)"></label>
+
+            <input id="b2" class="bit-input" type="checkbox" />
+            <label class="bit" for="b2" title="B2"></label>
+
+            <input id="b1" class="bit-input" type="checkbox" />
+            <label class="bit" for="b1" title="B1"></label>
+
+            <input id="b0" class="bit-input" type="checkbox" />
+            <label class="bit" for="b0" title="B0 (LSB)"></label>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right: Gate selection -->
+      <section class="panel">
+        <h2>LOGIC OPERATIONS</h2>
+        <div class="gates" role="radiogroup" aria-label="Select gate">
+          <input id="op-and" class="gate-radio" name="op" type="radio" checked/>
+          <label class="gate" for="op-and">AND</label>
+
+          <input id="op-or" class="gate-radio" name="op" type="radio"/>
+          <label class="gate" for="op-or">OR</label>
+
+          <input id="op-xor" class="gate-radio" name="op" type="radio"/>
+          <label class="gate" for="op-xor">XOR</label>
+        </div>
+      </section>
+    </div>
+
+    <!-- Computation area -->
+    <section class="results">
+      <h3>COMPUTATION RESULTS</h3>
+
+
+      <div class="wire" style="height:2px; margin:12px 6px 10px;"></div>
+
+      <div class="col" style="gap:12px; justify-content:center; flex-wrap:wrap">
+        <span class="tiny-label">OUTPUT</span>
+        <div class="rbit r3" title="Result bit 3 (MSB)"></div>
+        <div class="rbit r2" title="Result bit 2"></div>
+        <div class="rbit r1" title="Result bit 1"></div>
+        <div class="rbit r0" title="Result bit 0 (LSB)"></div>
+      </div>
+
+      <div class="decimals">
+        <div class="badge">A = <span id="adec">0</span></div>
+        <div class="badge">B = <span id="bdec">0</span></div>
+        <div class="badge"><strong>Result</strong> = <span id="rdec">0</span></div>
+      </div>
+
+
+    </section>
+
+  </div>
+
+<script>
+  (function(){
+    const bitsA = ['a3','a2','a1','a0'].map(id => document.getElementById(id));
+    const bitsB = ['b3','b2','b1','b0'].map(id => document.getElementById(id));
+    const ops = {
+      'op-and': { name:'AND', fn:(a,b)=> a & b, sym:'AND' },
+      'op-or' : { name:'OR' , fn:(a,b)=> a | b, sym:'OR'  },
+      'op-xor': { name:'XOR', fn:(a,b)=> a ^ b, sym:'XOR' }
+    };
+    const opRadios = Object.keys(ops).map(id=>document.getElementById(id));
+    const adec = document.getElementById('adec');
+    const bdec = document.getElementById('bdec');
+    const rdec = document.getElementById('rdec');
+
+    function bitsToInt(arr){
+      return (arr[0]<<3) | (arr[1]<<2) | (arr[2]<<1) | arr[3];
+    }
+    function activeGate(){
+      const r = opRadios.find(r=>r.checked);
+      return ops[r.id];
+    }
+    function valueOfBits(nodes){ return nodes.map(n=> n.checked ? 1 : 0); }
+
+    function render(){
+      const A = valueOfBits(bitsA);
+      const B = valueOfBits(bitsB);
+      const gate = activeGate();
+
+      adec.textContent = bitsToInt(A);
+      bdec.textContent = bitsToInt(B);
+
+      const R = [0,1,2,3].map(i => gate.fn(A[i], B[i]));
+      rdec.textContent = bitsToInt(R);
+    }
+
+    [...bitsA, ...bitsB, ...opRadios].forEach(el => el.addEventListener('change', render));
+    render();
+  })();
+</script>
+
+</body>
+</html>
