@@ -1,4 +1,3 @@
-
   :root{
     --bg:#041b0e;
     --panel:#081f12;
@@ -205,6 +204,7 @@
   }
   .col{
     display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+    justify-content:center; 
   }
   .tiny-label{
     font-weight:700; letter-spacing:.1em; color:#79f59b;
@@ -224,38 +224,23 @@
       rgba(39,255,97,.06);
     box-shadow: inset 0 0 .6rem rgba(39,255,97,.15);
     position:relative;
+    transition: background .15s ease, box-shadow .15s ease;
   }
   .rbit::after{
     content:"0";
     font-weight:700; font-size:22px; color:var(--neon); text-shadow:var(--shadow);
   }
-
-  /* ----------- PURE CSS LOGIC using :has() ----------- */
-  /* AND => bit is 1 iff Ai and Bi are checked */
-  .computer:has(#op-and:checked):has(#a3:checked):has(#b3:checked) .r3::after { content:"1" }
-  .computer:has(#op-and:checked):has(#a2:checked):has(#b2:checked) .r2::after { content:"1" }
-  .computer:has(#op-and:checked):has(#a1:checked):has(#b1:checked) .r1::after { content:"1" }
-  .computer:has(#op-and:checked):has(#a0:checked):has(#b0:checked) .r0::after { content:"1" }
-
-  /* OR => bit is 1 if Ai or Bi is checked */
-  .computer:has(#op-or:checked):has(#a3:checked) .r3::after { content:"1" }
-  .computer:has(#op-or:checked):has(#b3:checked) .r3::after { content:"1" }
-  .computer:has(#op-or:checked):has(#a2:checked) .r2::after { content:"1" }
-  .computer:has(#op-or:checked):has(#b2:checked) .r2::after { content:"1" }
-  .computer:has(#op-or:checked):has(#a1:checked) .r1::after { content:"1" }
-  .computer:has(#op-or:checked):has(#b1:checked) .r1::after { content:"1" }
-  .computer:has(#op-or:checked):has(#a0:checked) .r0::after { content:"1" }
-  .computer:has(#op-or:checked):has(#b0:checked) .r0::after { content:"1" }
-
-  /* XOR => bit is 1 if Ai != Bi */
-  .computer:has(#op-xor:checked):has(#a3:checked):not(:has(#b3:checked)) .r3::after { content:"1" }
-  .computer:has(#op-xor:checked):has(#b3:checked):not(:has(#a3:checked)) .r3::after { content:"1" }
-  .computer:has(#op-xor:checked):has(#a2:checked):not(:has(#b2:checked)) .r2::after { content:"1" }
-  .computer:has(#op-xor:checked):has(#b2:checked):not(:has(#a2:checked)) .r2::after { content:"1" }
-  .computer:has(#op-xor:checked):has(#a1:checked):not(:has(#b1:checked)) .r1::after { content:"1" }
-  .computer:has(#op-xor:checked):has(#b1:checked):not(:has(#a1:checked)) .r1::after { content:"1" }
-  .computer:has(#op-xor:checked):has(#a0:checked):not(:has(#b0:checked)) .r0::after { content:"1" }
-  .computer:has(#op-xor:checked):has(#b0:checked):not(:has(#a0:checked)) .r0::after { content:"1" }
+  
+  /* Active result bit styling */
+  .rbit.active {
+    background:
+      radial-gradient(100% 100% at 50% 30%, rgba(39,255,97,.6), rgba(39,255,97,.18) 65%, rgba(39,255,97,.08) 80%, rgba(39,255,97,.06) 100%),
+      rgba(39,255,97,.18);
+    box-shadow: var(--shadow-strong);
+  }
+  .rbit.active::after{ 
+    content:"1";
+  }
 
   /* pretty wires */
   .wire{
