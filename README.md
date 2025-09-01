@@ -51,10 +51,8 @@ BinariX is perfect for:
 ### Architecture
 - **Pure Frontend**: No server required, runs entirely in the browser
 - **Vanilla JavaScript**: No dependencies or frameworks needed
-- **Modern CSS**: Utilizes advanced features like `:has()` selectors
 - **Semantic HTML**: Accessible and well-structured markup
 
-*Note: Requires modern browser support for CSS `:has()` selector*
 
 <div align="center">
 
